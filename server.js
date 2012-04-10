@@ -2,7 +2,12 @@ var http = require("http");
 var url = require("url");
 var formidable = require("formidable");
 
-var server = http.createServer(function(req, res) {
+// Config variables
+var port = 3000; //TODO: make this configurable
+var uploadDir = __dirname + "/uploads"; // TODO: get this from config
+//TODO: bail out if the upload directory is not writable or does not exist
+
+var server = http.createServer(function (req, res) {
     console.log("starting server");
     switch (url.parse(req.url).pathname) {
         case '/':
@@ -16,8 +21,6 @@ var server = http.createServer(function(req, res) {
             break;
     }
 });
-
-var port = 3000; //TODO: make this configurable
 server.listen(port);
 
 // For this prototype in development, we serve a static file
@@ -33,7 +36,7 @@ function upload_file (req, res) {
 
     var form = new formidable.IncomingForm();
     form.encoding = "binary";
-    form.uploadDir = "/Users/jonathan/tmp";
+    form.uploadDir = uploadDir;
     form.keepExtensions = true;
     form.maxFieldsSize = 32 * 1024 * 1024;
 
