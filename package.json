@@ -4,5 +4,6 @@
   "dependencies": {
     "http": "",
     "formidable": ""
+    "url": "",
   }
 }

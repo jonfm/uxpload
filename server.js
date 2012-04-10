@@ -1,9 +1,9 @@
 var http = require("http");
+var url = require("url");
 var formidable = require("formidable");
 
 var server = http.createServer(function(req, res) {
     console.log("starting server");
-    upload_file(req, res);
     switch (url.parse(req.url).pathname) {
         case '/':
             display_form(req, res);
@@ -12,7 +12,7 @@ var server = http.createServer(function(req, res) {
             upload_file(req, res);
             break;
         default:
-            show_404(req, res);
+            //show_404(req, res);
             break;
     }
 });
@@ -20,10 +20,10 @@ var server = http.createServer(function(req, res) {
 var port = 3000; //TODO: make this configurable
 server.listen(port);
 
+// For this prototype in development, we serve a static file
 function display_form (req, res) {
     res.writeHead(200, {'content-type': 'text/html'});
-    res.write('<html>TODO: serve form template</html>');
-    res.end();
+    res.end('<html>TODO: serve form template</html>');
 }
 
 // Basic version, logging % uploaded
@@ -43,7 +43,7 @@ function upload_file (req, res) {
     });
 
     form.on( "end", function () {
-        console.log("request received");
+        console.log( "request received" );
     } );
 
     form.parse(req, function(err, fields, files) {
