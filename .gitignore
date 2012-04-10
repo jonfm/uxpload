@@ -1,0 +1,5 @@
+node_modules/
+views/
+*~
+*.swp
+scratch.tmp
