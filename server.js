@@ -1,27 +1,15 @@
-var http = require("http");
-var url = require("url");
 var formidable = require("formidable");
+var express = require("express");
 
 // Config variables
 var port = 3000; //TODO: make this configurable
 var uploadDir = __dirname + "/uploads"; // TODO: get this from config
 //TODO: bail out if the upload directory is not writable or does not exist
 
-var server = http.createServer(function (req, res) {
-    console.log("starting server");
-    switch (url.parse(req.url).pathname) {
-        case '/':
-            display_form(req, res);
-            break;
-        case '/upload':
-            upload_file(req, res);
-            break;
-        default:
-            //show_404(req, res);
-            break;
-    }
-});
-server.listen(port);
+var app = express.createServer();
+app.use("/", express.static(__dirname + '/public/html'));
+app.post("/upload", upload_file);
+app.listen(port);
 
 // For this prototype in development, we serve a static file
 function display_form (req, res) {
@@ -52,7 +40,7 @@ function upload_file (req, res) {
     form.parse(req, function(err, fields, files) {
         res.writeHead(200, {'content-type': 'text/plain'});
         res.write('received upload:\n\n');
-        res.end(util.inspect({fields: fields, files: files}));
+        res.end();
     });
 
 }
