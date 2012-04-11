@@ -1,3 +1,4 @@
+var http = require("http");
 var formidable = require("formidable");
 var express    = require("express");
 var connect    = require('connect');
