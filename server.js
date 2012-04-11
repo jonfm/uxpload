@@ -40,7 +40,7 @@ function upload_file (req, res) {
     form.maxFieldsSize = 32 * 1024 * 1024;
 
     form.on('progress', function (bytesReceived, bytesExpected) {
-        var percent = 100 * ( bytesReceived / bytesExpected );
+        var percent = Math.ceil( 100 * ( bytesReceived / bytesExpected ) );
         console.log( percent + "% ( " + bytesReceived + " / " + bytesExpected + " )" );
     });
 
@@ -50,7 +50,11 @@ function upload_file (req, res) {
 
     form.parse(req, function(err, fields, files) {
         res.writeHead(200, {'content-type': 'text/plain'});
-        res.write('received upload:\n\n');
+        if (req.headers["X-Requested-With"] === undefined) {
+            res.write('<textarea>received upload:\n\n</textarea>');
+        } else {
+            res.write('received upload:\n\n');
+        }
         res.end();
     });
 
