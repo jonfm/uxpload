@@ -1,5 +1,6 @@
 var formidable = require("formidable");
-var express = require("express");
+var express    = require("express");
+var connect    = require('connect');
 
 // Config variables
 var port = 3000; //TODO: make this configurable
@@ -7,20 +8,30 @@ var uploadDir = __dirname + "/uploads"; // TODO: get this from config
 //TODO: bail out if the upload directory is not writable or does not exist
 
 var app = express.createServer();
-app.use("/", express.static(__dirname + '/public/html'));
+app.use( connect.logger() );
+
+// Static paths to handle
+app.use( "/", express.static(__dirname + '/public/html') );
+app.use( "/css", express.static(__dirname + '/public/css') );
+app.use( "/js", express.static(__dirname + '/public/js') );
+
+// Dispatch section
 app.post("/upload", upload_file);
+
+// Start App
 app.listen(port);
 
-// For this prototype in development, we serve a static file
-function display_form (req, res) {
-    res.writeHead(200, {'content-type': 'text/html'});
-    res.end('<html>TODO: serve form template</html>');
-}
+
+/**
+    upload_file expects request and response objects like any nodejs handler
+**/
 
 // Basic version, logging % uploaded
 function upload_file (req, res) {
     console.log( "receiving upload" );
+    console.log( req.url );
     console.log( req.headers );
+    //console.log( req.query );
 
     var form = new formidable.IncomingForm();
     form.encoding = "binary";

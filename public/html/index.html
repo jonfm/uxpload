@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+        <script src="http://malsup.github.com/jquery.form.js"></script>
+        <script src="/js/uploader.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/uploader.css" />
+    </head>
+    <body>
+        <h1>SuperUpload</h1>
+        <form class="upload" action="/upload" enctype="multipart/form-data" method="POST">
+            <!-- <input type="file" name="file" accept="audio/*"></input> -->
+            <input type="file" name="file" accept="*"></input>
+            <!-- <input type="submit"></input> -->
+        </form>
+        <div class="progress">
+            <div class="bar"></div>
+            <div class="percent">0%</div>
+        </div>
+        <div id="status"></div><!-- TODO: remove this -->
+        <form action="/file/description">
+            <textarea cols="64" rows="4" class="description" name="descripton"></textarea>
+            <input disabled="true" type="submit" value="Save"></input>
+        </form>
+    </body>
+</html>
