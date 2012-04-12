@@ -51,7 +51,6 @@ function upload_file (req, res) {
     console.log( req.headers );
     //console.log( req.query );
 
-    try {
     var form = new formidable.IncomingForm();
     form.encoding = "binary";
     form.uploadDir = uploadDir;
