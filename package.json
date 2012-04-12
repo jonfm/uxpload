@@ -5,7 +5,6 @@
     "formidable" : "",
     "express"    : "",
     "events"     : "",
-    "fs"         : "",
     "connect"    : ""
   }
 }
