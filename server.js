@@ -1,11 +1,27 @@
-var http = require("http");
+var http       = require("http");
 var formidable = require("formidable");
 var express    = require("express");
-var connect    = require('connect');
+var connect    = require("connect");
+var fs         = require("fs");
 
 // Config variables
-var port = 3000; //TODO: make this configurable
-var uploadDir = __dirname + "/uploads"; // TODO: get this from config
+var port = process.env.PORT || 3000;
+var uploadDir = process.env.UPLOAD_DIR || __dirname + "/uploads";
+
+//TODO: looks horrible, refactor
+fs.stat( uploadDir, function (err, stats) {
+    if (err) {
+        fs.mkdir( uploadDir, "0777", function (mkdir_err) {
+            if (mkdir_err) {
+                console.error( "Cannot create upload directory " + uploadDir + " Error: " + mkdir_err );
+                throw mkdir_err;
+            } else {
+                console.log("Created upload dir: " + uploadDir);
+            }
+        } );
+    }
+} );
+
 //TODO: bail out if the upload directory is not writable or does not exist
 
 var app = express.createServer();
@@ -15,6 +31,7 @@ app.use( connect.logger() );
 app.use( "/", express.static(__dirname + '/public/html') );
 app.use( "/css", express.static(__dirname + '/public/css') );
 app.use( "/js", express.static(__dirname + '/public/js') );
+app.use( "/files", express.static(uploadDir) );
 
 // Dispatch section
 app.post("/upload", upload_file);
@@ -38,7 +55,7 @@ function upload_file (req, res) {
     form.encoding = "binary";
     form.uploadDir = uploadDir;
     form.keepExtensions = true;
-    form.maxFieldsSize = 32 * 1024 * 1024;
+    form.maxFieldsSize = 32 * 1024 * 1024; //TODO: define this in config
 
     form.on('progress', function (bytesReceived, bytesExpected) {
         var percent = Math.ceil( 100 * ( bytesReceived / bytesExpected ) );

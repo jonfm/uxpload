@@ -15,6 +15,7 @@ $(document).ready(
             //iframe: true,
 
             beforeSend: function() {
+                //TODO: grab the url we need for the file and put it in the action
                 window.console.log("sending..."); //TODO: remove or define console
                 status.empty();
                 var percentVal = '0%';
