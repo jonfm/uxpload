@@ -16,14 +16,12 @@ $(document).ready(
 
             beforeSend: function() {
                 //TODO: grab the url we need for the file and put it in the action
-                window.console.log("sending..."); //TODO: remove or define console
                 status.empty();
                 var percentVal = '0%';
                 bar.width(percentVal)
                 percent.html(percentVal);
             },
             uploadProgress: function(event, position, total, percentComplete) {
-                window.console.log("upload progress..."); //TODO: remove or define console
                 var percentVal = percentComplete + '%';
                 bar.width(percentVal)
                 percent.html(percentVal);
