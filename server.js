@@ -6,21 +6,7 @@ var fs         = require("fs");
 
 // Config variables
 var port = process.env.PORT || 3000;
-var uploadDir = process.env.UPLOAD_DIR || __dirname + "/uploads";
-
-//TODO: looks horrible, refactor
-fs.stat( uploadDir, function (err, stats) {
-    if (err) {
-        fs.mkdir( uploadDir, "0777", function (mkdir_err) {
-            if (mkdir_err) {
-                console.error( "Cannot create upload directory " + uploadDir + " Error: " + mkdir_err );
-                throw mkdir_err;
-            } else {
-                console.log("Created upload dir: " + uploadDir);
-            }
-        } );
-    }
-} );
+var uploadDir = initUploadDir();
 
 //TODO: bail out if the upload directory is not writable or does not exist
 
@@ -79,4 +65,22 @@ function upload_file (req, res) {
         res.end();
     });
 
+}
+
+//TODO: looks horrible, refactor
+function initUploadDir () {
+    var uploadDir = process.env.UPLOAD_DIR || __dirname + "/uploads";
+    fs.stat( uploadDir, function (err, stats) {
+        if (err) {
+            fs.mkdir( uploadDir, "0777", function (mkdir_err) {
+                if (mkdir_err) {
+                    console.error( "Cannot create upload directory " + uploadDir + " Error: " + mkdir_err );
+                    throw mkdir_err;
+                } else {
+                    console.log("Created upload dir: " + uploadDir);
+                }
+            } );
+        }
+    } );
+    return uploadDir;
 }
