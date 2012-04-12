@@ -17,7 +17,8 @@ $(document).ready(
             beforeSend: function() {
                 //TODO: grab the url we need for the file and put it in the action
                 status.empty();
-                var percentVal = '0%';
+                var percentVal = '?%';
+                // TODO: make somekind of holding bar so IE7 does not look awful
                 bar.width(percentVal)
                 percent.html(percentVal);
             },

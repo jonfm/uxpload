@@ -63,6 +63,8 @@ function upload_file (req, res) {
     });
 
     form.on( "end", function () {
+        //TODO: consider checking filetype and maybe discarding
+        //TODO: consider returning an md5 checksum
         console.log( "request received" );
     } );
 
