@@ -67,6 +67,7 @@ function upload_file (req, res) {
     } );
 
     form.parse(req, function(err, fields, files) {
+        // TODO: on a parse error return 400
         res.writeHead(200, {'content-type': 'text/plain'});
         if (req.headers["X-Requested-With"] === undefined) {
             res.write('<textarea>received upload:\n\n</textarea>');
