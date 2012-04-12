@@ -12,12 +12,10 @@ $(document).ready(
 
         //make our upload form an ajaxForm
         uploadForm.ajaxForm({
-            //iframe: true,
-
             beforeSend: function() {
                 //TODO: grab the url we need for the file and put it in the action
                 status.empty();
-                var percentVal = '?%';
+                var percentVal = 'Uploading...';
                 // TODO: make somekind of holding bar so IE7 does not look awful
                 bar.width(percentVal)
                 percent.html(percentVal);
