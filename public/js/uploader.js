@@ -13,10 +13,9 @@ $(document).ready(
         var uploadForm = $("form.upload");
         var dataForm   = $("form.metadata");
 
-        var uploadInProgress = 0;
-
         //make our upload form an ajaxForm
         uploadForm.ajaxForm({
+            dataType: 'json',
             beforeSend: function () {
                 dataForm.trigger("uploadStart");
                 status.empty();
@@ -30,13 +29,18 @@ $(document).ready(
                 bar.width(percentVal)
                 percent.html(percentVal);
             },
-            complete: function (xhr) {
-                dataForm.trigger("uploadComplete", [xhr]);
-                status.html(xhr.responseText);
+            success: function (res, statusText, xhr, form) {
+                dataForm.trigger("uploadComplete", [res]);
+                status.html(
+                    '<a href="'
+                    + res.url
+                    + '">' + res.title
+                    + '</a>'
+                );
             },
             error: function () {
                 status.html("There seems to have been a problem with the upload, please contact support...");
-                // TODO: post back error report
+                // TODO: post back error report?
             }
         });
 
@@ -54,10 +58,10 @@ $(document).ready(
             // WHEN the description is saved
             // AND the file is uploaded
             // SUBMIT the description form
-            descriptionSaved = false;
-            fileUploaded     = false;
-            fileUploading    = false;
-            saveButton       = dataForm.children("input[type=submit]");
+            var descriptionSaved = false;
+            var fileUploaded     = false;
+            var fileUploading    = false;
+            var saveButton       = dataForm.children("input[type=submit]");
 
             dataForm.bind( "submit", function (e) {
                 descriptionSaved = true;
@@ -75,10 +79,14 @@ $(document).ready(
                 fileUploaded  = false;
                 fileUploading = true;
             });
-            dataForm.bind("uploadComplete", function () {
+            dataForm.bind("uploadComplete", function (e, data) {
                 fileUploaded  = true;
                 fileUploading = false;
                 if ( descriptionSaved ) postDescription();
+
+                window.console.log(data.id);
+                dataForm.children("#fileId").attr( "value", data.id );
+                dataForm.children("#fileData").attr( "value", JSON.stringify(data) );
             });
             // IF the user edits the description again, don't send it to the server until they save again
             dataForm.children(".description").bind( "keyup", function () {
@@ -88,6 +96,11 @@ $(document).ready(
             })
             function postDescription () {
                 window.console.log("sending description to server...");
+                //
+                dataForm.ajaxForm({
+                    success: function (res) { window.console.log( res ); }
+                });
+                dataForm.ajaxSubmit();
             }
         } )();
 

@@ -5,6 +5,8 @@
     "formidable" : "",
     "express"    : "",
     "events"     : "",
+    "redis"      : "",
+    "node-uuid"  : "",
     "connect"    : ""
   }
 }
