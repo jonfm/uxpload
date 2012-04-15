@@ -14,8 +14,8 @@
  * Module dependencies.
  **/
 
-var express = require("express"   );
-var connect = require("connect"   );
+var express = require("express");
+var connect = require("connect");
 
 /**
  * This is the module we want to handle our requests.
@@ -23,16 +23,16 @@ var connect = require("connect"   );
 
 var file    = require("./lib/file.js");
 file.init({
-    "uploadDir": process.env.UPLOAD_DIR || __dirname + "/uploads"
+    "maxUploadSize" : process.env.MAX_UPLOAD_SIZE || 32 * 1024 *1024,
+    "uploadDir"     : process.env.UPLOAD_DIR      || __dirname + "/uploads"
 });
 
 /**
  * Configuration and initialisation
  **/
 
-var port          = process.env.PORT            || 3000; //default
-var maxUploadSize = process.env.MAX_UPLOAD_SIZE || 32 * 1024 * 1024; //default
-var app           = express.createServer();
+var port = process.env.PORT || 3000; //default for development
+var app  = express.createServer();
     app.use( connect.logger() );
 
 /**
