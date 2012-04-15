@@ -4,10 +4,8 @@
   "dependencies" : {
     "formidable" : "",
     "express"    : "",
-    "events"     : "",
     "redis"      : "",
     "node-uuid"  : "",
-    "requirejs"  : "",
     "connect"    : ""
   }
 }
