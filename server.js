@@ -1,3 +1,19 @@
+/**
+ * server.js
+ *
+ * Serves 3 purposes:
+ *
+ * 1) Defines static routes to serve HTML, css, and JS resources.
+ * 2) Configures an express node app with paramters dependent on the invoking
+ *    environment.
+ * 3) Sets up routes to handle file upload and metadata via POST to two separate
+ *    locations
+ **/
+
+/**
+ * Module dependencies.
+ **/
+
 var http       = require("http"      );
 var formidable = require("formidable");
 var express    = require("express"   );
@@ -6,31 +22,39 @@ var fs         = require("fs"        );
 var uuid       = require('node-uuid' );
 var redis      = require("redis"     );
 
-// Setup the Redis client
-var rclient    = redis.createClient();
-rclient.on("error", function (err) { console.log("Error " + err); });
+/**
+ * Configuration and initialisation
+ **/
 
-// Setup some globals
-var port          = process.env.PORT || 3000;
+var port          = process.env.PORT            || 3000; //default
 var uploadDir     = initUploadDir();
-var maxUploadSize = process.env.MAX_UPLOAD_SIZE || 32 * 1024 * 1024
+var maxUploadSize = process.env.MAX_UPLOAD_SIZE || 32 * 1024 * 1024; //default
 var app           = express.createServer();
+    app.use( connect.logger() );
+var rclient       = redis.createClient();
+    rclient.on("error", function (err) { console.log("Error " + err); });
 
-// The connect logger gives us a usable access log
-app.use( connect.logger() );
+/**
+ * Static path routes
+ **/
 
-// Static paths to handle
-app.use( "/",          express.static(__dirname + '/public/html') );
-app.use( "/css",       express.static(__dirname + '/public/css')  );
+app.use( "/",          express.static(__dirname + '/public/html')             );
+app.use( "/css",       express.static(__dirname + '/public/css')              );
 app.use( "/requirejs", express.static(__dirname + '/node_modules/requirejs/') );
-app.use( "/js",        express.static(__dirname + '/public/js')   );
-app.use( "/files",     express.static(uploadDir)                  );
+app.use( "/js",        express.static(__dirname + '/public/js')               );
+app.use( "/files",     express.static(uploadDir)                              );
 
-// Dispatch section
+/**
+ * Dynamic path routes
+ **/
+
 app.post( "/upload",      upload_file      );
 app.post( "/description", save_description );
 
-// Start App
+/**
+ * Start the app listening on the configured port.
+ **/
+
 app.listen(port);
 
 /**
