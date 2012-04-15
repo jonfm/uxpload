@@ -40,7 +40,7 @@ $(document).ready(
             },
             error: function () {
                 status.html("There seems to have been a problem with the upload, please contact support...");
-                // TODO: post back error report?
+                // In the future we can send back an error report.
             }
         });
 
@@ -82,11 +82,12 @@ $(document).ready(
             dataForm.bind("uploadComplete", function (e, data) {
                 fileUploaded  = true;
                 fileUploading = false;
-                if ( descriptionSaved ) postDescription();
 
                 window.console.log(data.id);
                 dataForm.children("#fileId").attr( "value", data.id );
                 dataForm.children("#fileData").attr( "value", JSON.stringify(data) );
+
+                if ( descriptionSaved ) postDescription();
             });
             // IF the user edits the description again, don't send it to the server until they save again
             dataForm.children(".description").bind( "keyup", function () {
@@ -96,11 +97,14 @@ $(document).ready(
             })
             function postDescription () {
                 window.console.log("sending description to server...");
-                //
-                dataForm.ajaxForm({
-                    success: function (res) { window.console.log( res ); }
-                });
-                dataForm.ajaxSubmit();
+                $.post("/description",
+                    dataForm.serialize(),
+                    function (data) {
+                        window.console.log(data);
+                        $("#savedTitle").html( data.title );
+                        $("#savedPath") .html( data.path  );
+                    }
+                );
             }
         } )();
 

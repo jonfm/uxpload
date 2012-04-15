@@ -16,12 +16,16 @@
             <div class="bar"></div>
             <div class="percent">0%</div>
         </div>
-        <div id="status"></div><!-- TODO: remove this -->
+        <div id="status"></div>
         <form enctype="application/x-www-form-urlencoded" class="metadata" action="/description" method="POST">
             <input type="hidden" id="fileId" name="fileId"></input>
             <input type="hidden" id="fileData" name="fileData"></input>
             <textarea cols="64" rows="4" class="description" name="fileDesc"></textarea>
             <input type="submit" value="Save"></input>
         </form>
+        <div id="savedInfo">
+            <p id="savedTitle"></p>
+            <p id="savedPath"></p>
+        </div>
     </body>
 </html>

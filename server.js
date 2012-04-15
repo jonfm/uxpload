@@ -3,7 +3,7 @@ var formidable = require("formidable");
 var express    = require("express"   );
 var connect    = require("connect"   );
 var fs         = require("fs"        );
-var uuid       = require('node-uuid' )
+var uuid       = require('node-uuid' );
 var redis      = require("redis"     );
 
 // Setup the Redis client
@@ -16,7 +16,7 @@ var uploadDir     = initUploadDir();
 var maxUploadSize = process.env.MAX_UPLOAD_SIZE || 32 * 1024 * 1024
 var app           = express.createServer();
 
-// Define a better logger
+// The connect logger gives us a usable access log
 app.use( connect.logger() );
 
 // Static paths to handle
@@ -38,36 +38,43 @@ app.listen(port);
  **/
 
 function save_description (req, res) {
+    console.log( req.url );
     console.log( req.params );
-    connect.bodyParser( req, res );
 
-    var fileId   = req.params.fileId;
-    var fileData = req.params.fileData;
-    var fileDesc = req.params.fileDesc;
-    console.log( fileData );
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        console.log( fields );
 
-    if ( fileId && fileData ) { //store the data and return 200
-        // TODO: sanitise and validate filePath and description
-        var data = {
-            "desc": fileDesc,
-            "id": fileId
-        };
-        rclient.set( fileId, data );
+        var fileId   = fields.fileId;
+        var fileData = fields.fileData;
+        var fileDesc = fields.fileDesc;
+        console.log( fileData );
 
-        res.writeHead(200, {'content-type': 'text/json'});
-        res.write( data );
-    } else { // log an error, return 400 for a bad request
-        console.log(
-            "Bad request to save_description\n",
-            "error - no fileId or fileDesc or fileData specified\n",
-            "fileId:   " + fileId   + "\n",
-            "fileData: " + fileData + "\n",
-            "fileDesc: " + fileDesc + "\n"
-        );
-        res.writeHead(400, {'content-type': 'text/plain'});
-        res.write( "error - no fileId or fileDesc or fileData specified" );
-    }
-    res.end();
+        if ( fileId && fileData && fileDesc ) {
+            // TODO: sanitise and validate filePath and description
+            var data     = JSON.parse(fileData);
+            data.desc = fileDesc;
+            console.log( data );
+            console.log( data.url );
+            console.log("fileDesc: " + fileDesc);
+            console.log("Storing file data: " + data);
+            rclient.hmset( fileId, data ); //TODO: add error callback
+
+            res.writeHead(200, {'content-type': 'text/json'});
+            res.write( JSON.stringify(data) );
+        } else { // log an error, return 400 for a bad request
+            console.log(
+                "Bad request to save_description\n",
+                "error - no fileId or fileDesc or fileData specified\n",
+                "fileId:   " + fileId   + "\n",
+                "fileData: " + fileData + "\n",
+                "fileDesc: " + fileDesc + "\n"
+            );
+            res.writeHead(400, {'content-type': 'text/plain'});
+            res.write( "error - no fileId or fileDesc or fileData specified" );
+        }
+        res.end();
+    });
 }
 
 /**
@@ -96,9 +103,9 @@ function upload_file (req, res) {
         // NB: we only support a single file right now
         file.id    = uuid.v1();
         // TODO: refactor this sanitisation into a util
+        // TODO: really need to test this
         file.title = uFile.name;
         file.path  = uFile.name;
-        // TODO: really need to test this
         file.path  = file.path.replace(/[\/]/g, "_");
         file.path  = file.path.toLowerCase().split(/\s+/).join("-");
         // We need a unique url, but it would be better to generate a nicer
@@ -114,9 +121,12 @@ function upload_file (req, res) {
             res.writeHead( 400, {'content-type': 'text/plain'} );
             res.write( "An error occurred parsing the upload" );
             console.err(err);
-        } else {
-            res.writeHead(200, {'content-type': 'application/json'});
+        } else if (file.id) {
+            res.writeHead( 200, {'content-type': 'application/json'} );
             res.write( JSON.stringify(file) );
+        } else {
+            res.writeHead( 400, {'content-type': 'application/json'} );
+            res.write( JSON.stringify(req) );
         }
     });
 
