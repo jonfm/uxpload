@@ -7,6 +7,14 @@
 
 $(document).ready(
     function() {
+
+        var console = window.console;
+        if ( typeof console == "undefined"
+          || typeof console.log == "undefined" ) {
+              var console = { log: function() {} };
+        }
+
+
         var bar        = $('.bar');
         var percent    = $('.percent');
         var status     = $('#status');
@@ -83,7 +91,7 @@ $(document).ready(
                 fileUploaded  = true;
                 fileUploading = false;
 
-                window.console.log(data.id);
+                console.log(data.id);
                 dataForm.children("#fileId").attr( "value", data.id );
                 dataForm.children("#fileData").attr( "value", JSON.stringify(data) );
 
@@ -91,16 +99,16 @@ $(document).ready(
             });
             // IF the user edits the description again, don't send it to the server until they save again
             dataForm.children(".description").bind( "keyup", function () {
-                window.console.log("description edited");
+                console.log("description edited");
                 saveButton.attr( "disabled", false );
                 descriptionSaved = false;
             })
             function postDescription () {
-                window.console.log("sending description to server...");
+                console.log("sending description to server...");
                 $.post("/description",
                     dataForm.serialize(),
                     function (data) {
-                        window.console.log(data);
+                        console.log(data);
                         $("#savedTitle").html( data.title );
                         $("#savedPath") .html( data.path  );
                     }
