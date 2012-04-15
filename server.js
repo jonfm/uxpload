@@ -20,10 +20,11 @@ var app           = express.createServer();
 app.use( connect.logger() );
 
 // Static paths to handle
-app.use( "/",      express.static(__dirname + '/public/html') );
-app.use( "/css",   express.static(__dirname + '/public/css')  );
-app.use( "/js",    express.static(__dirname + '/public/js')   );
-app.use( "/files", express.static(uploadDir)                  );
+app.use( "/",          express.static(__dirname + '/public/html') );
+app.use( "/css",       express.static(__dirname + '/public/css')  );
+app.use( "/requirejs", express.static(__dirname + '/node_modules/requirejs/') );
+app.use( "/js",        express.static(__dirname + '/public/js')   );
+app.use( "/files",     express.static(uploadDir)                  );
 
 // Dispatch section
 app.post( "/upload",      upload_file      );

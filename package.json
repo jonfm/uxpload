@@ -7,6 +7,7 @@
     "events"     : "",
     "redis"      : "",
     "node-uuid"  : "",
+    "requirejs"  : "",
     "connect"    : ""
   }
 }
