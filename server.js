@@ -18,12 +18,11 @@ var express = require("express");
 var connect = require("connect");
 
 /**
- * This is the module we want to handle our requests.
+ * superupload is the module we want to handle our requests.
  **/
 
-var file    = require("./lib/file.js");
-file.init({
-    "maxUploadSize" : process.env.MAX_UPLOAD_SIZE || 32 * 1024 *1024,
+var superUpload = require("./lib/superupload.js").init({
+    "maxUploadSize" : process.env.MAX_UPLOAD_SIZE || 32 * 1024 * 1024,
     "uploadDir"     : process.env.UPLOAD_DIR      || __dirname + "/uploads"
 });
 
@@ -42,14 +41,14 @@ var app  = express.createServer();
 app.use( "/",          express.static(__dirname + '/public/html')             );
 app.use( "/css",       express.static(__dirname + '/public/css')              );
 app.use( "/js",        express.static(__dirname + '/public/js')               );
-app.use( "/files",     express.static(file.uploadDir)                         );
+app.use( "/files",     express.static(superUpload.uploadDir)                         );
 
 /**
  * Dynamic path routes
  **/
 
-app.post( "/upload",      file.upload      );
-app.post( "/description", file.description );
+app.post( "/upload",      superUpload.upload      );
+app.post( "/description", superUpload.description );
 
 /**
  * Start the app listening on the configured port.
