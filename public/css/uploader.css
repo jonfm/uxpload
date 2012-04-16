@@ -1,4 +1,9 @@
+body {
+    font-family: helvetica, arial;
+}
+
 form {
+    width 500px;
     display: block;
     margin: 20px auto;
     background: #eee;
