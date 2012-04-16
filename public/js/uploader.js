@@ -1,123 +1,43 @@
 /**
  * uploader.js
  *
- * This is the main uploader client module.
+ * This is the main entry point to the uploader clientside. If there is a failure to reach
+ * the ID handler, then we inform the user here, otherwise we can initialise our forms with
+ * the returned unique ID and continue.
 **/
 
 define(
-    ["jquery", "/js/jquery.form.js"],
-    function ($) {
+    ["jquery", "/js/forms.js", "/js/console-override.js"],
+    function ($, forms, console) {
         $(document).ready(
             function() {
 
-                var console = window.console;
-                if ( typeof console == "undefined"
-                  || typeof console.log == "undefined" ) {
-                      var console = { log: function() {} };
-                }
+                var options = {
+                    "uploadForm" : $("form.upload"),
+                    "dataForm"   : $("form.metadata"),
+                    "statusMsg"  : $('#statusMsg')
+                };
 
+                $.ajax({
+                    "url"     : "/newid",
+                    "type"    : "GET",
+                    "success" : function (id) {
+                        console.log("Received id", id);
 
-                var bar        = $('.bar');
-                var percent    = $('.percent');
-                var statusMsg  = $('#statusMsg');
-                var uploadForm = $("form.upload");
-                var dataForm   = $("form.metadata");
+                        // Append the ID to both form actions
+                        options.uploadForm.attr(
+                            "action", options.uploadForm.attr("action") + "/" + id );
+                        options.dataForm  .attr(
+                            "action", options.dataForm  .attr("action") + "/" + id );
 
-                //make our upload form an ajaxForm
-                uploadForm.ajaxForm({
-                    dataType: 'json',
-                    beforeSend: function () {
-                        dataForm.trigger("uploadStart");
-                        statusMsg.empty();
-                        var percentVal = 'Uploading...';
-                        // TODO: make somekind of holding bar so IE7 does not look awful
-                        bar.width(percentVal)
-                        percent.html(percentVal);
+                        forms.initForms(options); //Sets up the two forms for the uploader
                     },
-                    uploadProgress: function (event, position, total, percentComplete) {
-                        var percentVal = percentComplete + '%';
-                        bar.width(percentVal)
-                        percent.html(percentVal);
-                    },
-                    success: function (res, statusText, xhr, form) {
-                        dataForm.trigger("uploadComplete", [res]);
+                    "error"  : function () {
                         statusMsg.html(
-                            '<a href="'
-                            + res.url
-                            + '">' + res.title
-                            + '</a>'
+                            "We are sorry, but an error has occured, please refresh or try again later"
                         );
-                    },
-                    error: function () {
-                        statusMsg.html("There seems to have been a problem with the upload, please contact support...");
-                        // In the future we can send back an error report.
                     }
                 });
-
-                //trigger the form submit when a user selects a file
-                uploadForm.children("input[type=file]").change( function () {
-                    uploadForm.submit();
-                } );
-
-                // Here we want to initialise some event relating to dataForm around closures
-                // TODO: consider refactoring this out into its own module, making the closures internal properties
-                ( function () {
-                    // WHEN the description is saved
-                    // UNLESS the file is uploading
-                    // PROMPT the user to choose a file
-                    // WHEN the description is saved
-                    // AND the file is uploaded
-                    // SUBMIT the description form
-                    var descriptionSaved = false;
-                    var fileUploaded     = false;
-                    var fileUploading    = false;
-                    var saveButton       = dataForm.children("input[type=submit]");
-
-                    dataForm.bind( "submit", function (e) {
-                        descriptionSaved = true;
-                        saveButton.attr( "disabled", "disabled");
-                        e.preventDefault();
-                        if ( fileUploaded ) {
-                            postDescription();
-                        } else if ( fileUploading ) {
-                            // when the upload completes, the description will be posted
-                        } else {
-                            alert( "Please choose a file to upload with your description." );
-                        }
-                    });
-                    dataForm.bind("uploadStart", function () {
-                        fileUploaded  = false;
-                        fileUploading = true;
-                    });
-                    dataForm.bind("uploadComplete", function (e, data) {
-                        fileUploaded  = true;
-                        fileUploading = false;
-
-                        console.log(data.id);
-                        dataForm.children("#fileId").attr( "value", data.id );
-                        dataForm.children("#fileData").attr( "value", JSON.stringify(data) );
-
-                        if ( descriptionSaved ) postDescription();
-                    });
-                    // IF the user edits the description again, don't send it to the server until they save again
-                    dataForm.children(".description").bind( "keyup", function () {
-                        console.log("description edited");
-                        saveButton.attr( "disabled", false );
-                        descriptionSaved = false;
-                    })
-                    function postDescription () {
-                        console.log("sending description to server...");
-                        $.post("/description",
-                            dataForm.serialize(),
-                            function (data) {
-                                console.log(data);
-                                $("#savedTitle").html( data.title );
-                                $("#savedPath") .html( data.path  );
-                            }
-                        );
-                    }
-                } )();
-
             }
         );
     }

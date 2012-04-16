@@ -47,8 +47,9 @@ app.use( "/files",     express.static(superUpload.uploadDir)                    
  * Dynamic path routes
  **/
 
-app.post( "/upload",      superUpload.upload      );
-app.post( "/description", superUpload.description );
+app.post( "/upload/:id",      superUpload.upload      );
+app.post( "/description/:id", superUpload.description );
+app.get ( "/newid",           superUpload.fileId      );
 
 /**
  * Start the app listening on the configured port.
