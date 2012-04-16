@@ -1,13 +1,18 @@
 /**
- * server.js
+ * SuperUpload
  *
- * Serves 3 purposes:
+ * This is a node.js application to handle file uploads, assigning them a uuid.v1-generated
+ * unique ID, storing them in a redis data store and reporting upload status to the client.
+ * The uploads are stored in a directory specified in the options hash given to superupload's
+ * init function.
+ *
+ * server.js serves 3 purposes:
  *
  * 1) Defines static routes to serve HTML, css, and JS resources.
- * 2) Configures an express node app with paramters dependent on the invoking
+ * 2) Configures an express node app with parameters dependent on the invoking
  *    environment.
- * 3) Sets up routes to handle file upload and metadata via POST to two separate
- *    locations. The actual methods are handled in the "file" module.
+ * 3) Sets up routes to handle uuid provisioning, file upload and metadata via GET/POST to
+ *    three separate locations. The actual methods are handled in the "superupload" module.
  **/
 
 /**
