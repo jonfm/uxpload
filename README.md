@@ -2,7 +2,10 @@
 
 ## Basic deployment:
 
-Install redis: http://redis.io/download
+Install node and redis:
+
+    http://nodejs.org/
+    http://redis.io/download
 
 Clone the repo:
 
