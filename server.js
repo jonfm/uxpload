@@ -21,6 +21,14 @@
 
 var express = require("express");
 var connect = require("connect");
+var redis   = require("redis"     );
+
+/**
+ * Redis client setup
+ **/
+
+var redisClient = redis.createClient();
+    redisClient.on("error", function (err) { console.log("Error " + err); });
 
 /**
  * superupload is the module we want to handle our requests.
@@ -28,7 +36,8 @@ var connect = require("connect");
 
 var superUpload = require("./lib/superupload.js").init({
     "maxUploadSize" : process.env.MAX_UPLOAD_SIZE || 32 * 1024 * 1024,
-    "uploadDir"     : process.env.UPLOAD_DIR      || __dirname + "/uploads"
+    "uploadDir"     : process.env.UPLOAD_DIR      || __dirname + "/uploads",
+    "redisClient"   : redisClient
 });
 
 /**
